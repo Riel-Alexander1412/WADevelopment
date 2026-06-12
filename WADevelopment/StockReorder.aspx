@@ -7,10 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Module 4: Reorder Record Management</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css" />
-    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-rounded/css/uicons-solid-rounded.css" />
-    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/> 
+
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-solid-straight/css/uicons-solid-straight.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-thin-straight/css/uicons-thin-straight.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-thin-rounded/css/uicons-thin-rounded.css'>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" />
@@ -28,7 +33,7 @@
                     <span>Maju Jaya Agrotech Supplies</span>
                 </a>
                 <div class="topbar-links d-none d-md-flex align-items-center gap-3">
-                    <a href="#" class="topbar-link"><i class="fi fi-rr-home me-1"></i> Dashboard</a>
+                    <a href="Dashboard.aspx" class="topbar-link"><i class="fi fi-rr-home me-1"></i> Dashboard</a>
                     <a href="#" class="topbar-link active"><i class="fi fi-rr-layers me-1"></i> Inventory Hub</a>
                     <a href="#" class="topbar-link"><i class="fi fi-rr-chart-histogram me-1"></i> Reports</a>
                     <a href="#" class="topbar-link"><i class="fi fi-rr-settings me-1"></i> Settings</a>
@@ -57,7 +62,7 @@
                         <nav aria-label="breadcrumb" class="mb-1">
                             <ol class="breadcrumb mb-0">
                                 <li class="breadcrumb-item">
-                                    <a href="#" class="breadcrumb-link">
+                                    <a href="StockManage.aspx" class="breadcrumb-link">
                                         <i class="fi fi-rr-angle-left me-1"></i> Inventory Hub
                                     </a>
                                 </li>
@@ -66,13 +71,10 @@
                         </nav>
                         <h1 class="page-title mb-0">Module 4: Reorder Record Management</h1>
                         <p class="page-meta mb-0">
-                            Responsible Developer: <strong>Person 4</strong>
-                            <span class="mx-2">•</span> Safety Stocks &amp; Automatic Reorder Triggers
+                            Responsible Developer: <strong>Gabriel</strong>
+                            <span class="mx-2">•</span> Stock Management System
                         </p>
                     </div>
-                    <a href="#" class="btn btn-procurement">
-                        <i class="fi fi-rr-radar me-2"></i> Procurement Radar
-                    </a>
                 </div>
             </div>
         </header>
@@ -80,10 +82,6 @@
         <main class="main-content">
             <div class="container-fluid px-4">
                 <div class="row g-4">
-
-                    <!-- ═══════════════════════════════════════════════
-                         LEFT PANEL: Define Reorder Parameters
-                    ════════════════════════════════════════════════ -->
                     <div class="col-12 col-lg-4">
                         <div class="card param-card h-100">
                             <div class="card-body p-4">
@@ -98,8 +96,6 @@
                                 </div>
 
                                 <hr class="param-divider" />
-
-                                <!-- SKU NUMBER — auto-filled & greyed out from dropdown / edit -->
                                 <div class="mb-3">
                                     <label for="txtSKU" class="field-label">
                                         <i class="fi fi-rr-id-badge me-1"></i> SKU NUMBER
@@ -111,11 +107,8 @@
                                             ReadOnly="true" />
                                         <span class="input-icon-right"><i class="fi fi-rr-fingerprint"></i></span>
                                     </div>
-                                    <%-- Hidden field stores the int SKU for server use --%>
                                     <asp:HiddenField ID="hfSKU" runat="server" Value="" />
                                 </div>
-
-                                <!-- SELECT PRODUCT — populates SKU + MinAmount on change -->
                                 <div class="mb-3">
                                     <label for="ddlProduct" class="field-label">
                                         <i class="fi fi-rr-box-open me-1"></i> SELECT PRODUCT
@@ -135,8 +128,6 @@
                                         <i class="fi fi-rr-exclamation me-1"></i> Please select a product.
                                     </asp:RequiredFieldValidator>
                                 </div>
-
-                                <!-- AMOUNT TO REORDER -->
                                 <div class="mb-3">
                                     <label for="txtAmount" class="field-label">
                                         <i class="fi fi-rr-inbox-in me-1"></i> AMOUNT TO REORDER (STOCK IN)
@@ -163,8 +154,6 @@
                                         <i class="fi fi-rr-exclamation me-1"></i> Must be between 1 and 999,999.
                                     </asp:RangeValidator>
                                 </div>
-
-                                <!-- SAFETY STOCK LIMIT (MinAmount override) -->
                                 <div class="mb-4">
                                     <label for="txtSafetyStockLimit" class="field-label">
                                         <i class="fi fi-rr-shield-check me-1"></i> SAFETY STOCK LIMIT (MIN AMOUNT)
@@ -195,8 +184,6 @@
                                         <i class="fi fi-rr-exclamation me-1"></i> Must be 0–99,999.
                                     </asp:RangeValidator>
                                 </div>
-
-                                <!-- Action Buttons -->
                                 <div class="d-flex gap-2">
                                     <asp:Button ID="btnEstablishRule" runat="server"
                                         CssClass="btn btn-establish flex-grow-1"
@@ -216,13 +203,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- ═══════════════════════════════════════════════
-                         RIGHT PANEL: Stock Summary Card + Table
-                    ════════════════════════════════════════════════ -->
                     <div class="col-12 col-lg-8 d-flex flex-column gap-4">
-
-                        <!-- Stock Summary Card (replaces EOQ card) -->
                         <div class="card eoq-card">
                             <div class="eoq-card-inner">
                                 <div class="d-flex align-items-start justify-content-between mb-2 flex-wrap gap-2">
@@ -245,8 +226,6 @@
                                     <code class="formula-chip">Net Worth = Σ (Amount × CostPerUnit)</code>
                                     <code class="formula-chip">Avg Units = Σ Amount ÷ Product Count</code>
                                 </div>
-
-                                <!-- Stock summary metrics -->
                                 <div class="row g-0 mt-4 eoq-metrics-row">
                                     <div class="col-4">
                                         <div class="eoq-metric-block">
@@ -278,8 +257,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Active Reorder Registers Table -->
                         <div class="card reorder-table-card">
                             <div class="card-body p-0">
                                 <div class="reorder-table-header d-flex align-items-start justify-content-between flex-wrap gap-2 p-4 pb-3">
@@ -291,12 +268,10 @@
                                         <p class="reorder-table-sub mb-0">Items nearing calculated safety boundaries requiring purchase actions</p>
                                     </div>
                                     <span class="alert-badge-pill">
-                                        <i class="fi fi-rr-exclamation-triangle me-1"></i>
-                                        <asp:Label ID="lblAlertCount" runat="server" Text="0" /> ALERTS
+                                        <i class="fi fi-ss-triangle-warning mt-1"></i>
+                                        <asp:Label ID="lblAlertCount" class="me-2" runat="server" Text="0" /> ALERTS
                                     </span>
                                 </div>
-
-                                <!-- Search / Filter Bar -->
                                 <div class="px-4 pb-3 d-flex gap-2 flex-wrap">
                                     <div class="search-wrap flex-grow-1">
                                         <i class="fi fi-rr-search search-icon"></i>
@@ -318,8 +293,6 @@
                                         CausesValidation="false"
                                         OnClick="btnSearch_Click" />
                                 </div>
-
-                                <!-- GridView -->
                                 <div class="table-responsive">
                                     <asp:GridView ID="gvReorderAlerts" runat="server"
                                         CssClass="table reorder-table mb-0"
@@ -330,8 +303,6 @@
                                         EmptyDataText="No products are currently below their minimum stock threshold."
                                         EmptyDataRowStyle-CssClass="empty-row">
                                         <Columns>
-
-                                            <%-- SKU + Product Name --%>
                                             <asp:TemplateField HeaderText="PRODUCT NAME">
                                                 <ItemTemplate>
                                                     <div class="product-name-cell">
@@ -340,8 +311,6 @@
                                                     </div>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-
-                                            <%-- CURRENT STOCK: Products.Amount --%>
                                             <asp:TemplateField HeaderText="CURRENT STOCK">
                                                 <ItemTemplate>
                                                     <span class='<%# GetQtyClass(Eval("Amount"), Eval("MinAmount")) %>'>
@@ -349,13 +318,9 @@
                                                     </span>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-
-                                            <%-- SAFETY STOCK: Products.MinAmount --%>
                                             <asp:BoundField DataField="MinAmount"
                                                 HeaderText="SAFETY STOCK (MIN)"
                                                 DataFormatString="{0} Units" />
-
-                                            <%-- STATUS: derived from Amount vs MinAmount --%>
                                             <asp:TemplateField HeaderText="STATUS">
                                                 <ItemTemplate>
                                                     <span class='<%# GetStatusClass(Eval("Status").ToString()) %>'>
@@ -363,8 +328,6 @@
                                                     </span>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
-
-                                            <%-- ACTIONS: CommandArgument = SKU (int) --%>
                                             <asp:TemplateField HeaderText="ACTIONS">
                                                 <ItemTemplate>
                                                     <div class="actions-cell d-flex gap-2">
@@ -392,8 +355,6 @@
                                         </Columns>
                                     </asp:GridView>
                                 </div>
-
-                                <!-- Footer / Record Count -->
                                 <div class="reorder-table-footer d-flex align-items-center justify-content-between flex-wrap gap-2 px-4 py-3">
                                     <span class="footer-count">
                                         Showing <asp:Label ID="lblRecordCount" runat="server" Text="0" /> of
@@ -408,16 +369,16 @@
                             </div>
                         </div>
 
-                    </div><!-- end right col -->
-                </div><!-- end row -->
+                    </div>
+                </div>
             </div>
         </main>
 
         <footer class="site-footer">
             <div class="container-fluid px-4">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                    <span>Maju Jaya Agrotech Supplies Sdn. Bhd. ERP Prototype Suite</span>
-                    <span>Inventory Module 4 • Safety Stocks &amp; Automatic Reorder Triggers • © 2026 (DEV)</span>
+                    <span>Maju Jaya Agrotech Supplies Management System</span>
+                    <span>Stocks Management & Inventory Module 4</span>
                 </div>
             </div>
         </footer>
@@ -425,16 +386,11 @@
     </form>
 
     <script>
-        // ── Auto-fill SKU text box when dropdown changes ──────────────────────
-        // ddlProduct fires AutoPostBack so the server handles the heavy lifting,
-        // but we also update the display instantly on the client for snappiness.
         document.addEventListener('DOMContentLoaded', function () {
 
             var ddl       = document.getElementById('<%= ddlProduct.ClientID %>');
             var txtSKU    = document.getElementById('<%= txtSKU.ClientID %>');
             var searchBox = document.getElementById('<%= txtSearch.ClientID %>');
-
-            // Update SKU display from selected option value (which is the int SKU)
             function syncSKU() {
                 var val = ddl ? ddl.value : '';
                 if (txtSKU) {
@@ -443,9 +399,8 @@
             }
 
             if (ddl) ddl.addEventListener('change', syncSKU);
-            syncSKU(); // run on page load in case of postback pre-selection
+            syncSKU();
 
-            // ── Live search: filter GridView rows as user types ───────────────
             if (searchBox) {
                 searchBox.addEventListener('keyup', function () {
                     var filter = this.value.toLowerCase();
@@ -457,7 +412,6 @@
             }
         });
 
-        // ── Client-side validation ────────────────────────────────────────────
         function validateFormJS() {
             var product      = document.getElementById('<%= ddlProduct.ClientID %>').value;
             var amount       = document.getElementById('<%= txtAmount.ClientID %>').value.trim();
@@ -479,7 +433,6 @@
             return true;
         }
 
-        // ── Delete confirmation ───────────────────────────────────────────────
         function confirmDelete() {
             return confirm('Are you sure you want to delete this reorder record?\nThis action cannot be undone.');
         }

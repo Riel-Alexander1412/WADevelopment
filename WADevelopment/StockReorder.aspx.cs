@@ -10,30 +10,21 @@ namespace WADevelopment
 {
     public partial class StockReorder : Page
     {
-        // ── Connection string ─────────────────────────────────────────────────
         string connStr => ConfigurationManager.ConnectionStrings["DB"].ConnectionString;
 
-        // ═════════════════════════════════════════════════════════════════════
-        // PAGE LOAD
-        // ═════════════════════════════════════════════════════════════════════
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
                 LoadProductDropdown();
                 BindGrid(LoadReorderRecords());
-                RefreshSummaryCard();   // populate aggregate totals on first load
+                RefreshSummaryCard();
             }
         }
-
-        // ═════════════════════════════════════════════════════════════════════
-        // DROPDOWN: Product selected → auto-fill SKU + stock summary card
-        // ═════════════════════════════════════════════════════════════════════
         protected void ddlProduct_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(ddlProduct.SelectedValue))
             {
-                // Nothing selected — clear the form fields
                 ClearSKUFields();
                 return;
             }
@@ -42,17 +33,10 @@ namespace WADevelopment
             PopulateSKUFields(sku);
         }
 
-        // ═════════════════════════════════════════════════════════════════════
-        // BUTTON: Establish Rule
-        //   • Inserts a StockIn record (logs the reorder)
-        //   • Updates Products.Amount += txtAmount
-        //   • Updates Products.MinAmount = txtSafetyStockLimit
-        // ═════════════════════════════════════════════════════════════════════
         protected void btnEstablishRule_Click(object sender, EventArgs e)
         {
             if (!Page.IsValid) return;
 
-            // Guard: SKU must be set (hidden field)
             if (string.IsNullOrEmpty(hfSKU.Value))
             {
                 ShowMessage("Please select a product before establishing a rule.", false);
@@ -65,17 +49,12 @@ namespace WADevelopment
             int userId = Session["UserID"] != null ? Convert.ToInt32(Session["UserID"]) : 1;
 
             InsertStockIn(sku, amount, userId, safetyStock);
-
-            // Refresh grid, SKU form fields, and aggregate summary card
             BindGrid(LoadReorderRecords());
-            PopulateSKUFields(sku);   // also calls RefreshSummaryCard() internally
+            PopulateSKUFields(sku);
 
             ShowMessage($"<i class='fi fi-rr-check-circle me-1'></i> Reorder of <strong>{amount} units</strong> logged for <strong>{ddlProduct.SelectedItem.Text}</strong>.", true);
         }
 
-        // ═════════════════════════════════════════════════════════════════════
-        // BUTTON: Reset form
-        // ═════════════════════════════════════════════════════════════════════
         protected void btnReset_Click(object sender, EventArgs e)
         {
             ddlProduct.SelectedIndex = 0;
@@ -88,18 +67,12 @@ namespace WADevelopment
             lblMessage.Visible = false;
         }
 
-        // ═════════════════════════════════════════════════════════════════════
-        // BUTTON: Search / Filter
-        // ═════════════════════════════════════════════════════════════════════
         protected void btnSearch_Click(object sender, EventArgs e)
         {
             var results = LoadReorderRecords(txtSearch.Text.Trim(), ddlStatusFilter.SelectedValue);
             BindGrid(results);
         }
 
-        // ═════════════════════════════════════════════════════════════════════
-        // GRIDVIEW: Row commands (Edit / Delete)
-        // ═════════════════════════════════════════════════════════════════════
         protected void gvReorderAlerts_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             if (string.IsNullOrEmpty(e.CommandArgument?.ToString())) return;
@@ -107,26 +80,18 @@ namespace WADevelopment
 
             switch (e.CommandName)
             {
-                // Edit: load the selected product's values into the left-hand form
                 case "EditRow":
                     LoadRowIntoForm(sku);
                     break;
 
-                // Delete: removes the most recent StockIn entry for this SKU
                 case "DeleteRow":
                     DeleteLatestStockIn(sku);
                     BindGrid(LoadReorderRecords());
-                    RefreshSummaryCard();   // totals change when stock is removed
+                    RefreshSummaryCard();
                     ShowMessage("<i class='fi fi-rr-trash me-1'></i> Latest reorder record deleted.", false);
                     break;
             }
         }
-
-        // ═════════════════════════════════════════════════════════════════════
-        // DATABASE HELPERS
-        // ═════════════════════════════════════════════════════════════════════
-
-        /// <summary>Fills the product dropdown from Products table.</summary>
         private void LoadProductDropdown()
         {
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -148,7 +113,6 @@ namespace WADevelopment
                             int qty = Convert.ToInt32(reader["Amount"]);
                             int minQty = Convert.ToInt32(reader["MinAmount"]);
 
-                            // Label format: "1 – Ergonomic Crop Pruner (Stock: 18 / Min: 15)"
                             string label = $"{sku} – {name}  (Stock: {qty} / Min: {minQty})";
                             ddlProduct.Items.Add(new ListItem(label, sku.ToString()));
                         }
@@ -157,13 +121,6 @@ namespace WADevelopment
             }
         }
 
-        /// <summary>
-        /// Fetches a single product from DB by SKU and populates:
-        ///   • txtSKU (read-only display, greyed out)
-        ///   • hfSKU  (hidden int for server use)
-        ///   • txtSafetyStockLimit (pre-filled with current MinAmount)
-        /// Then calls RefreshSummaryCard() to update the three aggregate metrics.
-        /// </summary>
         private void PopulateSKUFields(int sku)
         {
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -181,28 +138,18 @@ namespace WADevelopment
                         {
                             int minAmount = Convert.ToInt32(reader["MinAmount"]);
 
-                            // Left panel — SKU textbox (greyed out) + hidden field
                             txtSKU.Text = sku.ToString();
                             hfSKU.Value = sku.ToString();
 
-                            // Pre-fill safety stock with the product's current MinAmount
                             txtSafetyStockLimit.Text = minAmount.ToString();
                         }
                     }
                 }
             }
 
-            // Always refresh the aggregate summary card
             RefreshSummaryCard();
         }
 
-        /// <summary>
-        /// Queries aggregate totals across ALL products and updates the three
-        /// summary card labels:
-        ///   • lblTotalNetWorth   = Σ (Amount × CostPerUnit)
-        ///   • lblTotalSellPrice  = Σ (Amount × SellingPrice)
-        ///   • lblAvgStockUnit    = AVG(Amount)
-        /// </summary>
         private void RefreshSummaryCard()
         {
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -241,7 +188,6 @@ namespace WADevelopment
             }
         }
 
-        /// <summary>Clears the SKU-linked form fields and resets card to defaults.</summary>
         private void ClearSKUFields()
         {
             txtSKU.Text = string.Empty;
@@ -253,25 +199,16 @@ namespace WADevelopment
             lblAvgStockUnit.Text = "—";
         }
 
-        /// <summary>
-        /// Loads an existing row from the grid into the left-hand form for editing.
-        /// SKU textbox becomes read-only and greyed out (same as dropdown select).
-        /// </summary>
         private void LoadRowIntoForm(int sku)
         {
-            // Select matching item in dropdown
             var item = ddlProduct.Items.FindByValue(sku.ToString());
             if (item != null) ddlProduct.SelectedValue = sku.ToString();
 
-            // Populate SKU display + card + safety stock
             PopulateSKUFields(sku);
 
             ShowMessage($"<i class='fi fi-rr-pencil me-1'></i> Editing SKU <strong>{sku}</strong>. Adjust Amount and Safety Stock, then click Establish Rule.", true);
         }
 
-        /// <summary>
-        /// Inserts a StockIn record and updates Products.Amount + Products.MinAmount.
-        /// </summary>
         private void InsertStockIn(int sku, int amount, int userId, int newMinAmount)
         {
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -301,15 +238,10 @@ namespace WADevelopment
             }
         }
 
-        /// <summary>
-        /// Deletes the most recent StockIn record for the given SKU
-        /// and reverses its amount from Products.Amount.
-        /// </summary>
         private void DeleteLatestStockIn(int sku)
         {
             using (SqlConnection conn = new SqlConnection(connStr))
             {
-                // Find the latest StockIn for this SKU
                 string sqlFind = @"
                     SELECT TOP 1 StockInID, Amount
                     FROM   StockIn
@@ -334,7 +266,7 @@ namespace WADevelopment
                     }
                 }
 
-                if (stockInId == 0) return; // nothing to delete
+                if (stockInId == 0) return;
 
                 string sqlDelete = @"
                     DELETE FROM StockIn WHERE StockInID = @ID;
@@ -349,16 +281,11 @@ namespace WADevelopment
                     cmd.Parameters.AddWithValue("@ID", stockInId);
                     cmd.Parameters.AddWithValue("@Amount", stockAmt);
                     cmd.Parameters.AddWithValue("@SKU", sku);
-                    conn.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
         }
 
-        /// <summary>
-        /// Loads all products from DB with their computed Status.
-        /// Optionally filters by keyword and/or status.
-        /// </summary>
         private List<ReorderRecord> LoadReorderRecords(string keyword = "", string statusFilter = "All")
         {
             var records = new List<ReorderRecord>();
@@ -417,10 +344,6 @@ namespace WADevelopment
             return records;
         }
 
-        // ═════════════════════════════════════════════════════════════════════
-        // GRID BIND + UI HELPERS
-        // ═════════════════════════════════════════════════════════════════════
-
         private void BindGrid(List<ReorderRecord> records)
         {
             lblAlertCount.Text = records.Count(r => r.Status == "TRIGGER REORDER").ToString();
@@ -437,22 +360,16 @@ namespace WADevelopment
             lblMessage.Text = html;
             lblMessage.CssClass = success ? "form-message success" : "form-message error";
         }
-
-        // ── CSS class helpers (called from markup via <%# %>) ─────────────────
-
-        /// <summary>Returns the CSS class for the current-stock quantity cell.</summary>
         protected string GetQtyClass(object amountObj, object minAmountObj)
         {
             if (amountObj == null || minAmountObj == null) return "qty-ok";
             int amount = Convert.ToInt32(amountObj);
             int minAmount = Convert.ToInt32(minAmountObj);
 
-            if (amount <= minAmount) return "qty-critical";  // at or below safety stock
-            if (amount <= minAmount * 1.5) return "qty-low";       // within 150% of safety stock
+            if (amount <= minAmount) return "qty-critical";
+            if (amount <= minAmount * 1.5) return "qty-low";
             return "qty-ok";
         }
-
-        /// <summary>Returns the CSS class for the status badge.</summary>
         protected string GetStatusClass(string status)
         {
             switch (status?.ToUpper())
@@ -463,10 +380,6 @@ namespace WADevelopment
             }
         }
     }
-
-    // ═════════════════════════════════════════════════════════════════════════
-    // MODEL — trimmed to only what the DB actually provides
-    // ═════════════════════════════════════════════════════════════════════════
     public class ReorderRecord
     {
         public int SKU { get; set; }
