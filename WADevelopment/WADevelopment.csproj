@@ -71,6 +71,7 @@
     </Content>
     <Content Include="Assets\740dbffc37ee7c583f706563ee8a87ed.jpg" />
     <Content Include="CSS\Login.css" />
+    <Content Include="CSS\StockReorder.css" />
     <Content Include="Dashboard.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="StockIn.aspx" />
