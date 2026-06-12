@@ -33,31 +33,22 @@ namespace WADevelopment
         protected global::System.Web.UI.WebControls.ValidationSummary valSummary;
 
         /// <summary>
-        /// txtReorderLogicId control.
+        /// txtSKU control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtReorderLogicId;
+        protected global::System.Web.UI.WebControls.TextBox txtSKU;
 
         /// <summary>
-        /// rfvReorderLogicId control.
+        /// hfSKU control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvReorderLogicId;
-
-        /// <summary>
-        /// revReorderLogicId control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator revReorderLogicId;
+        protected global::System.Web.UI.WebControls.HiddenField hfSKU;
 
         /// <summary>
         /// ddlProduct control.
@@ -78,58 +69,31 @@ namespace WADevelopment
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvProduct;
 
         /// <summary>
-        /// txtAvgDailyUse control.
+        /// txtAmount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAvgDailyUse;
+        protected global::System.Web.UI.WebControls.TextBox txtAmount;
 
         /// <summary>
-        /// rfvAvgDailyUse control.
+        /// rfvAmount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvAvgDailyUse;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvAmount;
 
         /// <summary>
-        /// rvAvgDailyUse control.
+        /// rvAmount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RangeValidator rvAvgDailyUse;
-
-        /// <summary>
-        /// txtLeadTime control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtLeadTime;
-
-        /// <summary>
-        /// rfvLeadTime control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvLeadTime;
-
-        /// <summary>
-        /// rvLeadTime control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RangeValidator rvLeadTime;
+        protected global::System.Web.UI.WebControls.RangeValidator rvAmount;
 
         /// <summary>
         /// txtSafetyStockLimit control.
@@ -159,33 +123,6 @@ namespace WADevelopment
         protected global::System.Web.UI.WebControls.RangeValidator rvSafetyStockLimit;
 
         /// <summary>
-        /// txtAnnualDemand control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAnnualDemand;
-
-        /// <summary>
-        /// rfvAnnualDemand control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvAnnualDemand;
-
-        /// <summary>
-        /// rvAnnualDemand control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RangeValidator rvAnnualDemand;
-
-        /// <summary>
         /// btnEstablishRule control.
         /// </summary>
         /// <remarks>
@@ -213,31 +150,31 @@ namespace WADevelopment
         protected global::System.Web.UI.WebControls.Label lblMessage;
 
         /// <summary>
-        /// lblEOQ control.
+        /// lblTotalNetWorth control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblEOQ;
+        protected global::System.Web.UI.WebControls.Label lblTotalNetWorth;
 
         /// <summary>
-        /// lblROP control.
+        /// lblTotalSellPrice control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblROP;
+        protected global::System.Web.UI.WebControls.Label lblTotalSellPrice;
 
         /// <summary>
-        /// lblSafetyBuffer control.
+        /// lblAvgStockUnit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSafetyBuffer;
+        protected global::System.Web.UI.WebControls.Label lblAvgStockUnit;
 
         /// <summary>
         /// lblAlertCount control.
