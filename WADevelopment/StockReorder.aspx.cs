@@ -16,6 +16,11 @@ namespace WADevelopment
         {
             if (!IsPostBack)
             {
+                if (Session["UserID"] == null)
+                {
+                    Response.Redirect("~/Login.aspx", false);
+                }
+
                 LoadProductDropdown();
                 BindGrid(LoadReorderRecords());
                 RefreshSummaryCard();
