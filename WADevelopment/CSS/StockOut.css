@@ -1,0 +1,535 @@
+﻿/* ==========================================
+   Maju Jaya Agrotech Supplies CSS Stylesheet
+   Module 3: Stock Out Management Styling
+   ========================================== */
+
+/* Root and Base Layout Restructures */
+body {
+    background-color: #f4f6f9;
+    color: #334155;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.9rem;
+}
+
+/* Top Navigation Bar Styling */
+.site-topbar {
+    background-color: #0b1320;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #1e293b;
+}
+
+.topbar-brand {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #f8fafc;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+    .topbar-brand i {
+        color: #10b981;
+    }
+
+.topbar-links .topbar-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+    .topbar-links .topbar-link:hover,
+    .topbar-links .topbar-link.active {
+        color: #38bdf8;
+        background: rgba(56, 189, 248, 0.08);
+    }
+
+.user-badge {
+    background-color: #0284c7;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+}
+
+/* Page Outer Utilities Band */
+.top-utility-bar {
+    background-color: #0b1320;
+    padding: 0.6rem 2.5rem;
+    border-bottom: 1px solid #1e293b;
+}
+
+.utility-left {
+    color: #10b981;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.utility-right {
+    color: #94a3b8;
+    font-size: 0.72rem;
+    font-weight: 500;
+}
+
+/* Main Container Workspace Elements */
+.main-content {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+.breadcrumb-link, .breadcrumb-back {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: color 0.15s ease-in-out;
+}
+
+    .breadcrumb-link:hover, .breadcrumb-back:hover {
+        color: #0284c7;
+    }
+
+.page-header {
+    background-color: transparent;
+    border-bottom: none;
+    padding: 1.5rem 0 1rem 0;
+}
+
+.page-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+.page-meta {
+    font-size: 0.82rem;
+    color: #64748b;
+}
+
+/* Top Right Soft-Pink Dispatches Link Badge */
+.btn-dispatches {
+    background-color: #fff1f2;
+    color: #f43f5e;
+    border: 1px solid #ffe4e6;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.45rem 1.25rem;
+    border-radius: 8px;
+    transition: all 0.15s ease-in-out;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .btn-dispatches:hover {
+        background-color: #ffe4e6;
+        color: #e11d48;
+    }
+
+/* Form and Data Control Dashboard Sheets */
+.param-card, .reorder-table-card {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02), 0 2px 4px rgba(15, 23, 42, 0.01);
+}
+
+.param-title, .reorder-table-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+}
+
+.param-subtitle, .reorder-table-sub {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.param-icon-wrap {
+    background-color: rgba(56, 189, 248, 0.1);
+    color: #0284c7;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.param-divider {
+    border-top: 1px solid #f1f5f9;
+    opacity: 1;
+    margin: 1.25rem 0;
+}
+
+/* Label Definitions */
+.field-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.45rem;
+    display: block;
+}
+
+/* Custom Standardized Inputs */
+.field-input {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    font-size: 0.85rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+    .field-input:focus {
+        background-color: #ffffff;
+        border-color: #cbd5e1;
+        box-shadow: none;
+        color: #0f172a;
+    }
+
+    .field-input::placeholder {
+        color: #cbd5e1;
+    }
+
+/* Wrapper for input with right icon decoration */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+    .input-with-icon .field-input {
+        padding-right: 2.5rem;
+    }
+
+.input-icon-right {
+    position: absolute;
+    right: 1rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+/* Bottom Actions Control Elements */
+.btn-confirm {
+    background-color: #0f172a;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.82rem;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    transition: background-color 0.15s ease-in-out;
+}
+
+    .btn-confirm:hover {
+        background-color: #1e293b;
+        color: #ffffff;
+    }
+
+.btn-reset-form {
+    background-color: #f1f5f9;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.82rem;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    transition: all 0.15s ease-in-out;
+}
+
+    .btn-reset-form:hover {
+        background-color: #e2e8f0;
+        color: #475569;
+    }
+
+/* Complex Analytics Panel Styling (Deep Forest Green Theme) */
+.analytics-card {
+    background-color: #064e3b;
+    border: none;
+    border-radius: 16px;
+    color: #ffffff;
+    box-shadow: 0 4px 20px rgba(6, 78, 59, 0.05);
+}
+
+.analytics-card-inner {
+    padding: 1.5rem;
+}
+
+.analytics-badge {
+    background-color: rgba(52, 211, 153, 0.12);
+    color: #34d399;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
+    display: inline-block;
+}
+
+.analytics-suite-label {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+}
+
+.analytics-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    margin-top: 0.75rem;
+}
+
+.analytics-desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+}
+
+.formula-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.formula-chip {
+    color: #34d399;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    background-color: rgba(52, 211, 153, 0.06);
+    border: 1px solid rgba(52, 211, 153, 0.15);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+/* Analytics Metric Counters Container Cards */
+.analytics-metrics-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 1.5rem;
+}
+
+.analytics-metric-block {
+    padding: 1.15rem;
+    text-align: left;
+}
+
+.analytics-metric-border {
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.analytics-metric-label {
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.analytics-metric-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    display: block;
+}
+
+    .analytics-metric-value.red {
+        color: #fca5a5;
+    }
+
+    .analytics-metric-value.green {
+        color: #34d399;
+    }
+
+    .analytics-metric-value.text-white {
+        color: #ffffff;
+    }
+
+.analytics-unit {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: normal;
+}
+
+/* Status Labels Components */
+.alert-badge-pill {
+    background-color: #fffbeb;
+    color: #d97706;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    letter-spacing: -0.01em;
+}
+
+/* Search and Filter Blocks styling */
+.search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.85rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.search-input {
+    padding-left: 2.25rem !important;
+}
+
+.filter-select {
+    width: auto;
+    min-width: 150px;
+}
+
+.btn-filter {
+    background-color: #0f172a;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    border: none;
+}
+
+    .btn-filter:hover {
+        background-color: #1e293b;
+    }
+
+/* Data Table Presentation Layers */
+.reorder-table {
+    width: 100%;
+}
+
+    .reorder-table th {
+        background-color: #f8fafc !important;
+        color: #94a3b8 !important;
+        font-size: 0.68rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.06em !important;
+        padding: 0.85rem 1rem !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+
+    .reorder-table td {
+        padding: 1.1rem 1rem !important;
+        color: #475569;
+        font-size: 0.85rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+
+.bold-cell {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.product-name-cell .product-name {
+    font-weight: 600;
+    color: #0f172a;
+    display: block;
+}
+
+.product-name-cell .product-code {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    display: block;
+}
+
+.cost-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #0284c7;
+}
+
+/* Action Control Icons */
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 0.85rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.15s ease-in-out;
+}
+
+.edit-btn {
+    background-color: #f0f9ff;
+    color: #0369a1;
+    border-color: #e0f2fe;
+}
+
+    .edit-btn:hover {
+        background-color: #e0f2fe;
+    }
+
+.delete-btn {
+    background-color: #fef2f2;
+    color: #b91c1c;
+    border-color: #fee2e2;
+}
+
+    .delete-btn:hover {
+        background-color: #fee2e2;
+    }
+
+/* Custom Validator Display Controls */
+.field-error {
+    color: #dc2626;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-top: 0.35rem;
+    display: block;
+}
+
+.validation-summary {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #991b1b;
+    font-size: 0.8rem;
+    padding: 0.8rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Bottom Platform Footer Details */
+.site-footer {
+    background-color: #0b111e;
+    border-top: 1px solid #1e293b;
+    padding: 1.5rem 0;
+    color: #64748b;
+    font-size: 0.75rem;
+}
+
+    .site-footer span {
+        display: block;
+    }

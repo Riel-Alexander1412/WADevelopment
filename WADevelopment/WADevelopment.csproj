@@ -71,9 +71,12 @@
     </Content>
     <Content Include="Assets\icon.jpg" />
     <Content Include="CSS\Login.css" />
+    <Content Include="CSS\StockManage.css" />
+    <Content Include="CSS\StockOut.css" />
     <Content Include="CSS\StockReorder.css" />
     <Content Include="CSS\Dashboard.css" />
     <Content Include="Dashboard.aspx" />
+    <Content Include="JS\StockManage.js" />
     <Content Include="Login.aspx" />
     <Content Include="StockIn.aspx" />
     <Content Include="StockManage.aspx" />

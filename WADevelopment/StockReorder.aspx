@@ -187,7 +187,7 @@
                                 <div class="d-flex gap-2">
                                     <asp:Button ID="btnEstablishRule" runat="server"
                                         CssClass="btn btn-establish flex-grow-1"
-                                        Text="Establish Rule"
+                                        Text="Finalize Order"
                                         OnClick="btnEstablishRule_Click"
                                         OnClientClick="return validateFormJS();" />
                                     <asp:Button ID="btnReset" runat="server"
