@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -8,196 +10,189 @@ namespace WADevelopment
 {
     public partial class StockReorder : Page
     {
-        // ─── Simulated data store (replace with DB calls) ────────────────────
-        private static List<ReorderRecord> _reorderRecords = new List<ReorderRecord>
-        {
-            new ReorderRecord
-            {
-                ProductCode   = "PRD-2026-003",
-                ProductName   = "Ergonomic Crop Pruner",
-                CurrentQty    = 18,
-                CalculatedROP = 50,
-                SafetyStock   = 15,
-                CalculatedEOQ = 190,
-                Status        = "TRIGGER REORDER"
-            },
-            new ReorderRecord
-            {
-                ProductCode   = "PRD-2026-004",
-                ProductName   = "Heavy-Duty Garden Hoe",
-                CurrentQty    = 92,
-                CalculatedROP = 40,
-                SafetyStock   = 10,
-                CalculatedEOQ = 140,
-                Status        = "OK"
-            }
-        };
+        string connStr => ConfigurationManager.ConnectionStrings["DB"].ConnectionString;
 
-        // ─── Page_Load ────────────────────────────────────────────────────────
+        private List<ReorderRecord> LoadReorderRecords(string keyword = "", string statusFilter = "All")
+        {
+            List<ReorderRecord> records = new List<ReorderRecord>();
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                string sql = @"
+            SELECT 
+                p.SKU,
+                p.Name,
+                p.Description,
+                p.Amount        AS CurrentQty,
+                p.MinAmount     AS SafetyStock,
+                p.CostPerUnit,
+                p.SellingPrice,
+                p.Category,
+                CAST(SQRT((2.0 * 1800 * 50) / 2.0) AS INT) AS CalculatedEOQ,
+                (5 * 7) + p.MinAmount                       AS CalculatedROP,
+                CASE 
+                    WHEN p.Amount <= p.MinAmount             THEN 'TRIGGER REORDER'
+                    WHEN p.Amount <= p.MinAmount * 1.5       THEN 'LOW'
+                    ELSE 'OK'
+                END AS Status
+            FROM Products p
+            WHERE (@Keyword = '' OR p.Name LIKE @Search 
+                               OR p.Category LIKE @Search)
+              AND (@Status = 'All' OR 
+                   CASE 
+                       WHEN p.Amount <= p.MinAmount       THEN 'TRIGGER REORDER'
+                       WHEN p.Amount <= p.MinAmount * 1.5 THEN 'LOW'
+                       ELSE 'OK'
+                   END = @Status)
+            ORDER BY p.Amount ASC";
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Keyword", keyword);
+                    cmd.Parameters.AddWithValue("@Search", "%" + keyword + "%");
+                    cmd.Parameters.AddWithValue("@Status", statusFilter);
+
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            records.Add(new ReorderRecord
+                            {
+                                SKU = Convert.ToInt32(reader["SKU"]),
+                                ProductName = reader["Name"].ToString(),
+                                Description = reader["Description"].ToString(),
+                                Amount = Convert.ToInt32(reader["CurrentQty"]),
+                                MinAmount = Convert.ToInt32(reader["SafetyStock"]),
+                                CostPerUnit = Convert.ToDecimal(reader["CostPerUnit"]),
+                                SellingPrice = Convert.ToDecimal(reader["SellingPrice"]),
+                                Category = reader["Category"].ToString(),
+                                CalculatedEOQ = Convert.ToInt32(reader["CalculatedEOQ"]),
+                                CalculatedROP = Convert.ToInt32(reader["CalculatedROP"]),
+                                Status = reader["Status"].ToString()
+                            });
+                        }
+                    }
+                }
+            }
+
+            return records;
+        }
+
+        private void InsertStockIn(int sku, int quantity, int userId)
+        {
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                string sql = @"
+            INSERT INTO StockIn (SKU, Amount, [User], Date)
+            VALUES (@SKU, @Amount, @User, @Date);
+            UPDATE Products 
+            SET Amount = Amount + @Amount
+            WHERE SKU = @SKU";
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@SKU", sku);
+                    cmd.Parameters.AddWithValue("@Amount", quantity);
+                    cmd.Parameters.AddWithValue("@User", userId);
+                    cmd.Parameters.AddWithValue("@Date", DateTime.Now);
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        private void DeleteStockInRecord(int stockInId)
+        {
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                string sql = "DELETE FROM StockIn WHERE StockInID = @ID";
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@ID", stockInId);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        private void LoadProductDropdown()
+        {
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                string sql = @"
+            SELECT SKU, Name, Amount, MinAmount 
+            FROM Products 
+            ORDER BY Name ASC";
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        ddlProduct.Items.Clear();
+                        ddlProduct.Items.Add(new ListItem("-- Choose a product --", ""));
+
+                        while (reader.Read())
+                        {
+                            int sku = Convert.ToInt32(reader["SKU"]);
+                            string name = reader["Name"].ToString();
+                            int qty = Convert.ToInt32(reader["Amount"]);
+                            int minQty = Convert.ToInt32(reader["MinAmount"]);
+
+                            string label = $"{sku} – {name} (Stock: {qty} / Min: {minQty})";
+                            ddlProduct.Items.Add(new ListItem(label, sku.ToString()));
+                        }
+                    }
+                }
+            }
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                // Pre-fill default Logic ID on first load
-                txtReorderLogicId.Text = "REO-LOG-054";
-                txtAvgDailyUse.Text = "5";
-                txtLeadTime.Text = "7";
-                txtSafetyStockLimit.Text = "15";
-                txtAnnualDemand.Text = "1800";
-
-                // Calculate and display EOQ/ROP for default values
-                ComputeAndDisplay(
-                    avgDailyUse: 5,
-                    leadTimeDays: 7,
-                    safetyStock: 15,
-                    annualDemand: 1800,
-                    setupCost: 50,
-                    holdingCost: 2
-                );
-
-                BindGrid(_reorderRecords);
+                LoadProductDropdown();
+                BindGrid(LoadReorderRecords());
             }
         }
-
-        // ─── Establish Rule ───────────────────────────────────────────────────
         protected void btnEstablishRule_Click(object sender, EventArgs e)
         {
             if (!Page.IsValid) return;
 
-            // Parse inputs
-            int dailyUse = int.Parse(txtAvgDailyUse.Text.Trim());
-            int leadTime = int.Parse(txtLeadTime.Text.Trim());
-            int safetyStock = int.Parse(txtSafetyStockLimit.Text.Trim());
-            int annualDemand = int.Parse(txtAnnualDemand.Text.Trim());
-            string productVal = ddlProduct.SelectedValue;
-            string productText = ddlProduct.SelectedItem.Text;
-            string logicId = txtReorderLogicId.Text.Trim();
+            int sku = int.Parse(ddlProduct.SelectedValue);
+            int eoqQty = int.Parse(lblEOQ.Text.Replace(",", ""));  // use computed EOQ as reorder qty
+            int userId = Convert.ToInt32(Session["UserID"]);        // from your login session
 
-            const double setupCost = 50.0;
-            const double holdingCost = 2.0;
+            InsertStockIn(sku, eoqQty, userId);
 
-            // Compute EOQ & ROP
-            int eoq = (int)Math.Round(Math.Sqrt((2.0 * annualDemand * setupCost) / holdingCost));
-            int rop = (dailyUse * leadTime) + safetyStock;
+            BindGrid(LoadReorderRecords());
 
-            ComputeAndDisplay(dailyUse, leadTime, safetyStock, annualDemand, setupCost, holdingCost);
-
-            // Determine status
-            // Simulate current qty from existing record or default to 999
-            var existing = _reorderRecords.FirstOrDefault(r => r.ProductCode == productVal);
-            int currentQty = existing?.CurrentQty ?? 999;
-            string status = currentQty <= rop ? "TRIGGER REORDER" : "OK";
-
-            // Upsert record
-            if (existing != null)
-            {
-                existing.CalculatedROP = rop;
-                existing.SafetyStock = safetyStock;
-                existing.CalculatedEOQ = eoq;
-                existing.Status = status;
-            }
-            else
-            {
-                _reorderRecords.Add(new ReorderRecord
-                {
-                    ProductCode = productVal,
-                    ProductName = productText.Contains("–") ? productText.Split('–')[1].Trim() : productText,
-                    CurrentQty = currentQty,
-                    CalculatedROP = rop,
-                    SafetyStock = safetyStock,
-                    CalculatedEOQ = eoq,
-                    Status = status
-                });
-            }
-
-            BindGrid(_reorderRecords);
-
-            // Success feedback
             lblMessage.Visible = true;
-            lblMessage.Text = $"<i class=\"fi fi-rr-check-circle me-1\"></i> Reorder rule <strong>{logicId}</strong> established successfully for <strong>{productText.Split('–').Last().Trim()}</strong>.";
+            lblMessage.Text = $"<i class='fi fi-rr-check-circle me-1'></i> Reorder logged for <strong>{ddlProduct.SelectedItem.Text}</strong>.";
             lblMessage.CssClass = "form-message success";
         }
-
-        // ─── Reset Form ───────────────────────────────────────────────────────
-        protected void btnReset_Click(object sender, EventArgs e)
-        {
-            txtReorderLogicId.Text = string.Empty;
-            ddlProduct.SelectedIndex = 0;
-            txtAvgDailyUse.Text = string.Empty;
-            txtLeadTime.Text = string.Empty;
-            txtSafetyStockLimit.Text = string.Empty;
-            txtAnnualDemand.Text = string.Empty;
-
-            lblEOQ.Text = "—";
-            lblROP.Text = "—";
-            lblSafetyBuffer.Text = "—";
-
-            lblMessage.Visible = false;
-        }
-
-        // ─── Search / Filter ──────────────────────────────────────────────────
         protected void btnSearch_Click(object sender, EventArgs e)
         {
-            string keyword = txtSearch.Text.Trim().ToLower();
-            string statusFilter = ddlStatusFilter.SelectedValue;
-
-            var filtered = _reorderRecords.AsEnumerable();
-
-            if (!string.IsNullOrEmpty(keyword))
-                filtered = filtered.Where(r =>
-                    r.ProductName.ToLower().Contains(keyword) ||
-                    r.ProductCode.ToLower().Contains(keyword));
-
-            if (statusFilter != "All")
-                filtered = filtered.Where(r => r.Status.Equals(statusFilter, StringComparison.OrdinalIgnoreCase));
-
-            BindGrid(filtered.ToList());
+            var results = LoadReorderRecords(txtSearch.Text.Trim(), ddlStatusFilter.SelectedValue);
+            BindGrid(results);
         }
-
-        // ─── GridView RowCommand (Edit / Confirm / Delete) ────────────────────
         protected void gvReorderAlerts_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            string productCode = e.CommandArgument?.ToString();
+            int stockInId = Convert.ToInt32(e.CommandArgument);
 
-            switch (e.CommandName)
+            if (e.CommandName == "DeleteRow")
             {
-                case "DeleteRow":
-                    _reorderRecords.RemoveAll(r => r.ProductCode == productCode);
-                    BindGrid(_reorderRecords);
-                    lblMessage.Visible = true;
-                    lblMessage.Text = $"<i class=\"fi fi-rr-trash me-1\"></i> Record <strong>{productCode}</strong> has been deleted.";
-                    lblMessage.CssClass = "form-message error";
-                    break;
+                DeleteStockInRecord(stockInId);
+                BindGrid(LoadReorderRecords());
 
-                case "ConfirmRow":
-                    var rec = _reorderRecords.FirstOrDefault(r => r.ProductCode == productCode);
-                    if (rec != null) rec.Status = "OK";
-                    BindGrid(_reorderRecords);
-                    lblMessage.Visible = true;
-                    lblMessage.Text = $"<i class=\"fi fi-rr-check-circle me-1\"></i> Reorder for <strong>{productCode}</strong> confirmed as actioned.";
-                    lblMessage.CssClass = "form-message success";
-                    break;
-
-                case "EditRow":
-                    var target = _reorderRecords.FirstOrDefault(r => r.ProductCode == productCode);
-                    if (target != null)
-                    {
-                        // Pre-fill form with record data for editing
-                        ddlProduct.SelectedValue = target.ProductCode;
-                        txtSafetyStockLimit.Text = target.SafetyStock.ToString();
-                        lblMessage.Visible = true;
-                        lblMessage.Text = $"<i class=\"fi fi-rr-pencil me-1\"></i> Editing record <strong>{productCode}</strong>. Adjust parameters and click Establish Rule.";
-                        lblMessage.CssClass = "form-message success";
-                    }
-                    break;
+                lblMessage.Visible = true;
+                lblMessage.Text = "<i class='fi fi-rr-trash me-1'></i> Record deleted successfully.";
+                lblMessage.CssClass = "form-message error";
             }
         }
-
-        // ─── Helpers ─────────────────────────────────────────────────────────
-        private void ComputeAndDisplay(
-            double avgDailyUse, double leadTimeDays,
-            double safetyStock, double annualDemand,
-            double setupCost, double holdingCost)
+        private void CalculateShow(double avgDailyUse, double leadTimeDays, double safetyStock, double annualDemand, double setupCost, double holdingCost)
         {
             int eoq = holdingCost > 0
                 ? (int)Math.Round(Math.Sqrt((2.0 * annualDemand * setupCost) / holdingCost))
@@ -208,7 +203,6 @@ namespace WADevelopment
             lblROP.Text = rop.ToString("N0");
             lblSafetyBuffer.Text = ((int)safetyStock).ToString("N0");
         }
-
         private void BindGrid(List<ReorderRecord> records)
         {
             int alertCount = records.Count(r => r.Status == "TRIGGER REORDER");
@@ -220,7 +214,6 @@ namespace WADevelopment
             gvReorderAlerts.DataBind();
         }
 
-        // ─── Code-behind helper exposed to markup ─────────────────────────────
         protected string GetQtyClass(object qtyObj, object ropObj)
         {
             if (qtyObj == null || ropObj == null) return "qty-ok";
@@ -242,15 +235,18 @@ namespace WADevelopment
         }
     }
 
-    // ─── Model ───────────────────────────────────────────────────────────────
     public class ReorderRecord
     {
-        public string ProductCode { get; set; }
+        public int SKU { get; set; }
         public string ProductName { get; set; }
-        public int CurrentQty { get; set; }
-        public int CalculatedROP { get; set; }
-        public int SafetyStock { get; set; }
+        public string Description { get; set; }
+        public int Amount { get; set; }
+        public int MinAmount { get; set; }
+        public decimal CostPerUnit { get; set; }
+        public decimal SellingPrice { get; set; }
+        public string Category { get; set; }
         public int CalculatedEOQ { get; set; }
+        public int CalculatedROP { get; set; }
         public string Status { get; set; }
     }
 }
